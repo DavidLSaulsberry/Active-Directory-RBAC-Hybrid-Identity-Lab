@@ -1,24 +1,38 @@
-# Active Directory RBAC Home Lab
+# Active Directory RBAC + Microsoft Entra ID Hybrid Identity Home Lab
 
-## Overview
+# Overview
 
-This project demonstrates the design and implementation of an enterprise Active Directory environment for a fictional healthcare organization, **Northstar Medical Group (NMG)**.
+This project demonstrates the design and implementation of a hybrid Identity and Access Management (IAM) environment for a fictional healthcare organization, **Northstar Medical Group (NMG)**.
 
-The goal of this lab was to rebuild an identity infrastructure using industry-standard Identity and Access Management (IAM) practices, including Organizational Unit (OU) design, Role-Based Access Control (RBAC), user provisioning, PowerShell automation, and incident management through ServiceNow.
+The goal of this lab was to build an enterprise-style identity infrastructure using **Active Directory Domain Services (AD DS)** integrated with **Microsoft Entra ID** through **Azure AD Connect**.
 
-The environment simulates responsibilities commonly performed by IAM Analysts, System Administrators, and Help Desk professionals.
+The environment demonstrates real-world IAM concepts including:
+
+- Organizational Unit (OU) design
+- Role-Based Access Control (RBAC)
+- User provisioning
+- Identity lifecycle management
+- Hybrid identity synchronization
+- Multi-Factor Authentication (MFA)
+- PowerShell automation
+- Incident management through ServiceNow
+
+This lab simulates responsibilities commonly performed by **IAM Analysts, Identity Engineers, System Administrators, and Help Desk professionals**.
 
 ---
 
 # Project Objectives
 
 - Build a Windows Server Active Directory domain from scratch
-- Create department-based Organizational Units
+- Design department-based Organizational Units (OUs)
 - Implement Role-Based Access Control (RBAC)
-- Provision employee accounts using naming standards
-- Automate user creation with PowerShell
-- Manage security group assignments
-- Troubleshoot Active Directory access issues
+- Create and manage employee identities
+- Automate account provisioning using PowerShell
+- Configure Active Directory security groups
+- Integrate Active Directory with Microsoft Entra ID
+- Configure Azure AD Connect synchronization
+- Implement MFA using Microsoft Authenticator
+- Troubleshoot identity and access issues
 - Document incidents using ServiceNow
 
 ---
@@ -30,16 +44,53 @@ The environment simulates responsibilities commonly performed by IAM Analysts, S
 | Domain | NMG.com |
 | Operating System | Windows Server 2022 |
 | Directory Service | Active Directory Domain Services |
+| Cloud Identity Provider | Microsoft Entra ID |
+| Identity Synchronization | Azure AD Connect |
 | Virtualization | VirtualBox |
 | Automation | PowerShell |
+| Authentication Security | Microsoft Authenticator MFA |
 | Ticketing Platform | ServiceNow |
 | Documentation | GitHub |
 
 ---
 
+# Hybrid Identity Architecture
+
+The environment was configured as a hybrid identity solution by connecting an on-premises Active Directory environment with Microsoft Entra ID.
+
+Azure AD Connect was used to synchronize identities between Active Directory and Microsoft Entra ID.
+
+The following identity objects were synchronized:
+
+- User accounts
+- User Principal Names (UPNs)
+- Security groups
+- User attributes
+
+Architecture:
+
+```
+On-Premises Environment
+
+Active Directory Domain Services
+              |
+              |
+       Azure AD Connect
+              |
+              |
+     Microsoft Entra ID
+              |
+              |
+     Cloud Applications
+```
+
+This setup simulates how organizations maintain both on-premises and cloud identity environments.
+
+---
+
 # Active Directory Structure
 
-The Active Directory environment was organized using a department-based OU structure to improve security, administration, and access control.
+The Active Directory environment was organized using department-based Organizational Units to improve administration, security, and access control.
 
 ```
 NMG.com
@@ -72,9 +123,29 @@ First Initial + Last Name
 Example:
 
 ```
+Employee:
 Alejandro Gonzales
+
+Username:
+agonzales
+
+UPN:
 agonzales@NMG.com
 ```
+
+Each account was configured with:
+
+- First and last name attributes
+- Department information
+- Job title
+- User Principal Name (UPN)
+- Security group membership
+- Password settings
+- Enabled account status
+
+---
+
+# Employee Accounts
 
 ## Finance Users
 
@@ -113,11 +184,11 @@ agonzales@NMG.com
 
 ---
 
-# RBAC Implementation
+# Role-Based Access Control (RBAC)
 
-Role-Based Access Control was implemented using Active Directory security groups.
+RBAC was implemented using Active Directory security groups.
 
-Users were assigned permissions based on department membership rather than individual access assignments.
+Users were assigned permissions based on their department and job responsibilities instead of assigning permissions individually.
 
 | Department | Security Group |
 |---|---|
@@ -126,13 +197,69 @@ Users were assigned permissions based on department membership rather than indiv
 | IT | IT-Users |
 | Operations | Operations-Users |
 
-This approach improves scalability, security, and simplifies user lifecycle management.
+Benefits of this RBAC approach:
+
+- Improved security
+- Simplified permission management
+- Easier onboarding and offboarding
+- Supports scalable identity lifecycle management
+- Follows least privilege principles
+
+---
+
+# Microsoft Entra ID Integration
+
+Microsoft Entra ID was integrated with the Active Directory environment to create a hybrid identity solution.
+
+Azure AD Connect was configured to synchronize:
+
+- Active Directory users
+- Security groups
+- Identity attributes
+- User Principal Names (UPNs)
+
+Users created in Active Directory were synchronized into Microsoft Entra ID, allowing cloud-based identity management.
+
+This demonstrated how enterprise organizations manage identities across both on-premises and cloud environments.
+
+---
+
+# Multi-Factor Authentication (MFA)
+
+MFA was enabled using **Microsoft Authenticator** to strengthen authentication security.
+
+Users were required to complete additional verification during login.
+
+Authentication workflow:
+
+```
+User Sign-In
+
+      ↓
+
+Username + Password
+
+      ↓
+
+Microsoft Authenticator Approval
+
+      ↓
+
+Access Granted
+```
+
+Security benefits:
+
+- Reduces risk from compromised passwords
+- Provides stronger identity verification
+- Supports Zero Trust security principles
+- Improves account protection
 
 ---
 
 # PowerShell User Provisioning Automation
 
-PowerShell was used to automate Active Directory account creation.
+PowerShell was used to automate Active Directory account creation and management.
 
 Automation included:
 
@@ -142,10 +269,10 @@ Automation included:
 - Assigning departments
 - Assigning job titles
 - Enabling accounts
-- Configuring password settings
+- Configuring passwords
 - Adding users to security groups
 
-This reduced manual provisioning steps and ensured consistent account creation.
+Automation improved consistency, reduced manual work, and followed standardized provisioning practices.
 
 ---
 
@@ -157,33 +284,45 @@ A simulated IAM support ticket was created in ServiceNow to replicate a real-wor
 
 ### Affected User
 
-Eiona Jackson  
+**Eiona Jackson**
+
+Username:
+
+```
 ejackson@NMG.com
+```
 
-### Issue
+---
 
-User reported:
+## Issue
+
+The user reported:
 
 - Unable to access Operations shared resources
 - Incorrect mapped drives
 - Incorrect desktop policies
 
-### Investigation
+---
 
-The account was found to have:
+## Investigation
 
-- Incorrect OU placement
+The account was discovered to have:
+
+- Incorrect Organizational Unit placement
 - Incorrect security group membership
 
-### Resolution
+---
+
+## Resolution
 
 Completed actions:
 
 - Moved user account into the Operations OU
 - Removed incorrect HR-Users membership
 - Added Operations-Users membership
-- Verified correct Active Directory configuration
-- Documented the resolution
+- Verified Active Directory configuration
+- Confirmed correct permissions
+- Documented resolution in ServiceNow
 
 ---
 
@@ -199,7 +338,7 @@ Active-Directory-RBAC-Home-Lab
 │   └── RBAC-Structure.md
 │
 ├── Incident-Reports
-│   ├── NMG-0047-Resolution.txt
+│   ├── INC0010008-Resolution.txt
 │   └── ServiceNow-Ticket.png
 │
 ├── Screenshots
@@ -216,13 +355,20 @@ Active-Directory-RBAC-Home-Lab
 # Skills Demonstrated
 
 - Active Directory Administration
-- Identity & Access Management (IAM)
-- User Lifecycle Management
+- Microsoft Entra ID
+- Hybrid Identity Management
+- Azure AD Connect
+- Identity Synchronization
+- Identity Lifecycle Management
 - Role-Based Access Control (RBAC)
+- User Provisioning
 - Security Group Management
+- Multi-Factor Authentication (MFA)
+- Microsoft Authenticator
 - PowerShell Automation
 - ServiceNow Incident Management
-- Troubleshooting & Root Cause Analysis
+- Troubleshooting
+- Root Cause Analysis
 - Technical Documentation
 
 ---
@@ -231,12 +377,16 @@ Active-Directory-RBAC-Home-Lab
 
 Future enhancements for this environment include:
 
-- Microsoft Entra ID integration
 - Conditional Access policies
-- MFA implementation
-- Group Policy hardening
+- Passwordless authentication
+- Privileged Access Management (PAM)
+- CyberArk integration
 - Automated Joiner/Mover/Leaver workflows
-- Privileged Access Management integration
+- Group Policy security hardening
+- Entra ID Governance
+- Access Reviews
+- Separation of Duties (SoD)
+- Identity Governance workflows
 
 ---
 
@@ -244,12 +394,15 @@ Future enhancements for this environment include:
 
 Coming Soon
 
-A walkthrough demonstrating:
+The walkthrough will demonstrate:
 
 - Active Directory deployment
 - OU structure
 - RBAC implementation
 - PowerShell automation
+- Azure AD Connect configuration
+- Microsoft Entra ID synchronization
+- MFA enrollment with Microsoft Authenticator
 - ServiceNow incident resolution
 
 ---
