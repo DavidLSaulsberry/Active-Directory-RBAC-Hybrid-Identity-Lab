@@ -392,19 +392,7 @@ Future enhancements for this environment include:
 
 # Video Walkthrough
 
-Coming Soon
-
-The walkthrough will demonstrate:
-
-- Active Directory deployment
-- OU structure
-- RBAC implementation
-- PowerShell automation
-- Azure AD Connect configuration
-- Microsoft Entra ID synchronization
-- MFA enrollment with Microsoft Authenticator
-- ServiceNow incident resolution
-
+https://youtu.be/6Whn4dQBcMs
 ---
 
 
